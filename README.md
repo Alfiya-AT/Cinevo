@@ -1,73 +1,84 @@
-# 🎬 Cinevo - Advanced Movie Recommendation System
+# 🎬 Cinevo Movie Recommendation System
 
-[![Live Demo](https://img.shields.io/badge/demo-live-brightgreen.svg)](https://Alfiya-AT.github.io/cinevo-movie-recommendation-system/)
-[![Vercel](https://img.shields.io/badge/deploy-vercel-black.svg)](https://cinevo-movie-recommendation-system.vercel.app)
+[![Live Demo](https://img.shields.io/badge/demo-live-brightgreen.svg?style=for-the-badge)](https://Alfiya-AT.github.io/cinevo-movie-recommendation-system/)
+[![GitHub Repo](https://img.shields.io/badge/github-repo-blue.svg?style=for-the-badge)](https://github.com/Alfiya-AT/cinevo-movie-recommendation-system)
+[![Vercel](https://img.shields.io/badge/deploy-vercel-black.svg?style=for-the-badge)](https://cinevo-movie-recommendation-system.vercel.app)
 
-Cinevo is a premium, Netflix-inspired cinematic streaming platform built with **React.js**, **Tailwind CSS 4**, and **Redux Toolkit**. It provides a pixel-perfect user interface with professional animations and real-time data integration via The Movie Database (TMDB).
+Cinevo is a premium, Netflix-style movie recommendation system built with **React.js**, **Vite**, and **Tailwind CSS**. It leverages the **Streaming Availability API** (via RapidAPI) to provide real-time movie data, streaming options, and personalized recommendations.
+
+---
 
 ## ✨ Features
 
-- 🎬 **Premium UI**: Professional-grade landing page, vibrant billboard, and dynamic content rows.
-- 🎨 **Anime Avatars**: Personalized profile selection with iconic anime character emojis (🦊, ⚔️, 👒).
-- 🔍 **Real-time Search**: Debounced search with history and multi-category results.
-- 📽️ **Show Details**: Interactive modal with HD backdrops, similar recommendations, and cast info.
-- 📑 **My List**: Personal watchlist persisted across sessions (Local Storage / SQL Ready).
-- 🛡️ **Secure Auth**: Full Signup/Login flow with **Bcrypt** hashing and **JWT** session management.
-- 📱 **Fully Responsive**: Optimized for Mobile, Tablet, and Desktop.
+- 🍿 **Netflix-Style UI**: Sleek, responsive, and cinematic user interface.
+- 🔍 **Advanced Search**: Find movies and TV shows across multiple streaming platforms.
+- 🌟 **Personalized Recommendations**: Get suggestions based on your preferences.
+- 📱 **Cross-Platform**: Works flawlessly on Mobile, Tablet, and Desktop.
+- ⚡ **Lightning Fast**: Built with Vite for optimal performance.
+- 🎨 **Modern Tech**: Styled with Tailwind CSS for a premium look.
+
+---
 
 ## 🛠️ Tech Stack
 
-- **Frontend**: React 19, Tailwind CSS 4, Framer Motion
-- **State**: Redux Toolkit
-- **Backend**: Node.js, Express.js, Helmet
-- **Database**: Aiven Cloud MySQL
-- **Auth**: JWT, Bcrypt.js
-- **API**: The Movie Database (TMDB) API
+![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
+![RapidAPI](https://img.shields.io/badge/RapidAPI-005571?style=for-the-badge&logo=rapidapi&logoColor=white)
+
+---
 
 ## 📸 Screenshots
 
-*(Add screenshots here)*
+![Home Page](https://via.placeholder.com/800x450?text=Cinevo+Home+Page)
+*Netflix-inspired billboard and dynamic content rows.*
+
+![Search Results](https://via.placeholder.com/400x225?text=Search+Results)
+*Fast and accurate search functionality.*
+
+---
 
 ## 🚀 Setup Instructions
 
-1. **Clone the repository**:
-   ```bash
-   git clone https://github.com/Alfiya-AT/cinevo-movie-recommendation-system.git
-   cd cinevo-movie-recommendation-system
-   ```
+### 1. Clone the repository
+```bash
+git clone https://github.com/Alfiya-AT/cinevo-movie-recommendation-system.git
+cd cinevo-movie-recommendation-system
+```
 
-2. **Install dependencies**:
-   ```bash
-   npm install
-   ```
+### 2. Install dependencies
+```bash
+npm install
+```
 
-3. **Configure Environment Variables**:
-   Create a `.env` file in the root directory and add:
-   ```env
-   VITE_TMDB_API_KEY=your_key
-   VITE_TMDB_ACCESS_TOKEN=your_token
-   VITE_TMDB_BASE_URL=https://api.themoviedb.org/3
-   VITE_TMDB_IMAGE_BASE_URL=https://image.tmdb.org/t/p
+### 3. Configure API Keys
+Create a `.env` file in the root directory and add your RapidAPI credentials:
+```env
+VITE_RAPIDAPI_KEY=your_rapidapi_key_here
+VITE_RAPIDAPI_HOST=streaming-availability.p.rapidapi.com
+```
 
-   AIVEN_HOST=your-service.aivencloud.com
-   AIVEN_PORT=your_port
-   AIVEN_USER=avnadmin
-   AIVEN_PASSWORD=your_password
-   AIVEN_DATABASE=defaultdb
-   JWT_SECRET=your_jwt_secret
-   ```
+### 4. Run Locally
+```bash
+npm run dev
+```
 
-4. **Initialize Database**:
-   Run the SQL commands provided in `server/db/schema.sql` on your Aiven MySQL console.
+---
 
-5. **Run the Application**:
-   - Frontend: `npm run dev`
-   - Backend: `npm run server`
+## 📡 API Configuration Guide
 
-## 📡 API Configuration
+This project uses the **Streaming Availability API** from RapidAPI.
+1. Subscribe to the API on [RapidAPI](https://rapidapi.com/movie-of-the-night-movie-of-the-night-default/api/streaming-availability/).
+2. Get your `X-RapidAPI-Key`.
+3. Add it to your `.env` file or GitHub Secrets as `VITE_RAPIDAPI_KEY`.
 
-This project uses the TMDB API. Ensure you have a valid API Key and Access Token from [TMDB Settings](https://www.themoviedb.org/settings/api).
+---
 
 ## 📄 License
 
-This project is licensed under the MIT License.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+Developed with ❤️ by [Alfiya-AT](https://github.com/Alfiya-AT)

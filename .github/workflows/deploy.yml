@@ -23,10 +23,7 @@ jobs:
       - name: Build Project
         run: npm run build
         env:
-          VITE_TMDB_API_KEY: ${{ secrets.VITE_TMDB_API_KEY }}
-          VITE_TMDB_ACCESS_TOKEN: ${{ secrets.VITE_TMDB_ACCESS_TOKEN }}
-          VITE_TMDB_BASE_URL: https://api.themoviedb.org/3
-          VITE_TMDB_IMAGE_BASE_URL: https://image.tmdb.org/t/p
+          VITE_RAPIDAPI_KEY: ${{ secrets.VITE_RAPIDAPI_KEY }}
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
