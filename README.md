@@ -7,7 +7,7 @@
 Cinevo is a premium, Netflix-style movie recommendation system built with **React.js**, **Vite**, and **Tailwind CSS**. It leverages the **Streaming Availability API** (via RapidAPI) to provide real-time movie data, streaming options, and personalized recommendations.
 
 ---
-
+https://cinevo-fhz1fg2bw-alfiyat391-5600s-projects.vercel.app/
 ## ✨ Features
 
 - 🍿 **Netflix-Style UI**: Sleek, responsive, and cinematic user interface.
