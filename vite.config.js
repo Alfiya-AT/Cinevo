@@ -4,7 +4,7 @@ import tailwindcss from '@tailwindcss/vite'
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: '/cinevo-movie-recommendation-system/',
+  base: '/',
   plugins: [
     react(),
     tailwindcss(),
