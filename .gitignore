@@ -4,3 +4,11 @@ node_modules/
 dist/
 .DS_Store
 *.log
+
+# SQLite database files (local only - don't upload to GitHub)
+server/cinevo.db
+server/cinevo.db-wal
+server/cinevo.db-shm
+*.db
+*.db-wal
+*.db-shm

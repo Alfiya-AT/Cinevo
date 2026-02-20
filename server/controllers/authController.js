@@ -1,6 +1,9 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import pool from '../config/aiven.js';
+import db from '../config/db.js';
+
+const JWT_SECRET = process.env.JWT_SECRET || 'cinevo_dev_secret_key_change_in_production';
+const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
 
 export const signup = async (req, res) => {
     try {
@@ -15,52 +18,42 @@ export const signup = async (req, res) => {
         }
 
         // 2. Check password strength
-        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-        if (!passwordRegex.test(password)) {
+        if (password.length < 6) {
             return res.status(400).json({
                 success: false,
-                message: 'Password must be 8+ chars with uppercase, lowercase, number & special character'
+                message: 'Password must be at least 6 characters'
             });
         }
 
-        // 3. Check if email exists
-        const [existingUser] = await pool.execute(
-            'SELECT id FROM users WHERE email = ?',
-            [email]
-        );
-        if (existingUser.length > 0) {
+        // 3. Check if email already exists
+        const existingUser = db.prepare('SELECT id FROM users WHERE email = ?').get(email);
+        if (existingUser) {
             return res.status(409).json({
                 success: false,
-                message: 'Email already registered'
+                message: 'Email already registered. Please sign in instead.'
             });
         }
 
-        // 4. ENCODE PASSWORD → Hash with bcrypt salt rounds 12
-        const saltRounds = 12;
-        const salt = await bcrypt.genSalt(saltRounds);
-        const password_hash = await bcrypt.hash(password, salt);
+        // 4. Hash the password
+        const password_hash = await bcrypt.hash(password, 12);
 
-        // 5. Store in Aiven database
-        const [result] = await pool.execute(
-            'INSERT INTO users (full_name, email, password_hash, plan) VALUES (?, ?, ?, ?)',
-            [full_name, email, password_hash, plan || 'basic']
+        // 5. Insert user into SQLite
+        const insertUser = db.prepare(
+            'INSERT INTO users (full_name, email, password_hash, plan) VALUES (?, ?, ?, ?)'
         );
+        const result = insertUser.run(full_name, email, password_hash, plan || 'basic');
+        const userId = result.lastInsertRowid;
 
         // 6. Auto-create default profile
-        await pool.execute(
-            'INSERT INTO profiles (user_id, profile_name, avatar) VALUES (?, ?, ?)',
-            [result.insertId, full_name.split(' ')[0], '🎬']
-        );
+        db.prepare(
+            'INSERT INTO profiles (user_id, profile_name, avatar) VALUES (?, ?, ?)'
+        ).run(userId, full_name.split(' ')[0], '🎬');
 
         // 7. Generate JWT Token
         const token = jwt.sign(
-            {
-                userId: result.insertId,
-                email: email,
-                plan: plan
-            },
-            process.env.JWT_SECRET,
-            { expiresIn: process.env.JWT_EXPIRES_IN }
+            { userId, email, plan: plan || 'basic' },
+            JWT_SECRET,
+            { expiresIn: JWT_EXPIRES_IN }
         );
 
         res.status(201).json({
@@ -68,10 +61,11 @@ export const signup = async (req, res) => {
             message: 'Account created successfully',
             token,
             user: {
-                id: result.insertId,
+                id: userId,
                 full_name,
                 email,
-                plan: plan || 'basic'
+                plan: plan || 'basic',
+                avatar: '🎬'
             }
         });
 
@@ -79,7 +73,7 @@ export const signup = async (req, res) => {
         console.error('Signup error:', error);
         res.status(500).json({
             success: false,
-            message: 'Server error during signup'
+            message: 'Server error during signup. Please try again.'
         });
     }
 };
@@ -96,24 +90,20 @@ export const login = async (req, res) => {
             });
         }
 
-        // 2. Fetch user from Aiven DB
-        const [users] = await pool.execute(
-            'SELECT id, full_name, email, password_hash, plan, avatar FROM users WHERE email = ?',
-            [email]
-        );
+        // 2. Fetch user from SQLite
+        const user = db.prepare(
+            'SELECT id, full_name, email, password_hash, plan, avatar FROM users WHERE email = ?'
+        ).get(email);
 
-        if (users.length === 0) {
+        if (!user) {
             return res.status(401).json({
                 success: false,
                 message: 'Invalid email or password'
             });
         }
 
-        const user = users[0];
-
-        // 3. DECODE/COMPARE PASSWORD
+        // 3. Compare password
         const isPasswordValid = await bcrypt.compare(password, user.password_hash);
-
         if (!isPasswordValid) {
             return res.status(401).json({
                 success: false,
@@ -121,21 +111,14 @@ export const login = async (req, res) => {
             });
         }
 
-        // 4. Generate JWT Token
-        const token = jwt.sign(
-            {
-                userId: user.id,
-                email: user.email,
-                plan: user.plan
-            },
-            process.env.JWT_SECRET,
-            { expiresIn: process.env.JWT_EXPIRES_IN }
-        );
+        // 4. Update last login timestamp
+        db.prepare('UPDATE users SET updated_at = datetime(\'now\') WHERE id = ?').run(user.id);
 
-        // 5. Update last login
-        await pool.execute(
-            'UPDATE users SET updated_at = NOW() WHERE id = ?',
-            [user.id]
+        // 5. Generate JWT Token
+        const token = jwt.sign(
+            { userId: user.id, email: user.email, plan: user.plan },
+            JWT_SECRET,
+            { expiresIn: JWT_EXPIRES_IN }
         );
 
         res.status(200).json({
@@ -155,27 +138,24 @@ export const login = async (req, res) => {
         console.error('Login error:', error);
         res.status(500).json({
             success: false,
-            message: 'Server error during login'
+            message: 'Server error during login. Please try again.'
         });
     }
 };
 
 export const getProfile = async (req, res) => {
     try {
-        const [users] = await pool.execute(
-            'SELECT id, full_name, email, plan, avatar FROM users WHERE id = ?',
-            [req.user.userId]
-        );
+        const user = db.prepare(
+            'SELECT id, full_name, email, plan, avatar FROM users WHERE id = ?'
+        ).get(req.user.userId);
 
-        if (users.length === 0) {
+        if (!user) {
             return res.status(404).json({ success: false, message: 'User not found' });
         }
 
-        res.status(200).json({
-            success: true,
-            user: users[0]
-        });
+        res.status(200).json({ success: true, user });
     } catch (error) {
+        console.error('GetProfile error:', error);
         res.status(500).json({ success: false, message: 'Server error' });
     }
 };

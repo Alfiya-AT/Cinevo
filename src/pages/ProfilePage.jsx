@@ -1,14 +1,20 @@
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { FaPlus } from 'react-icons/fa';
+import { useSelector } from 'react-redux';
 
 const ProfilePage = () => {
     const navigate = useNavigate();
+    const { user } = useSelector((state) => state.auth);
+
+    // Use real user's name for the first profile, fallback to 'My Profile'
+    const firstName = user?.full_name?.split(' ')[0] || 'My Profile';
+    const userAvatar = user?.avatar || '🎬';
 
     const PROFILES = [
-        { name: 'Alfiya', emoji: '🦊', color: 'bg-orange-500' }, // Naruto
-        { name: 'Guest', emoji: '⚔️', color: 'bg-green-600' }, // Tanjiro
-        { name: 'Kids', emoji: '👒', color: 'bg-red-500' }, // Luffy
+        { name: firstName, emoji: userAvatar, color: 'bg-orange-500' },
+        { name: 'Guest', emoji: '⚔️', color: 'bg-green-600' },
+        { name: 'Kids', emoji: '👒', color: 'bg-red-500' },
     ];
 
     return (

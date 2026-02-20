@@ -1,5 +1,7 @@
 import jwt from 'jsonwebtoken';
 
+const JWT_SECRET = process.env.JWT_SECRET || 'cinevo_dev_secret_key_change_in_production';
+
 export const protect = async (req, res, next) => {
     try {
         let token;
@@ -16,7 +18,7 @@ export const protect = async (req, res, next) => {
         }
 
         // Verify and decode JWT
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const decoded = jwt.verify(token, JWT_SECRET);
         req.user = decoded;
         next();
 
